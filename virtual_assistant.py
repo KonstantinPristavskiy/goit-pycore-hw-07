@@ -202,8 +202,13 @@ def add_birthday(args, book: AddressBook):
         record.add_birthday(birthday)
         return f"Contact '{name}' created with birthday {birthday}."
     else:
-        record.add_birthday(birthday)
-        return f"Birthday {birthday} added to contact '{name}'."
+        if record.birthday is not None:
+            old_birthday = record.birthday.value.strftime(DATE_FORMAT)
+            record.add_birthday(birthday)
+            return f"Birthday for '{name}' updated from {old_birthday} to {birthday}."
+        else:
+            record.add_birthday(birthday)
+            return f"Birthday {birthday} added to contact '{name}'."
 
 @input_error
 def show_birthday(args, book: AddressBook):
@@ -295,13 +300,12 @@ def show_phone(args, book: AddressBook):
 
 @input_error
 def show_all(book: AddressBook):
-    """Показує всі контакти з телефонами."""
+    """Показує всі контакти з телефонами та днями народження."""
     if not book.data:
         return "No contacts found."
     contacts_list = []
     for name, record in book.data.items():
-        phones = [phone.value for phone in record.phones]
-        contacts_list.append(f"{name}: {', '.join(phones)}")
+        contacts_list.append(str(record))
     
     return "\n".join(contacts_list)
 
